@@ -207,6 +207,8 @@ export interface User {
   phone?: string;
   profileImage: string;
   location: string;
+  latitude?: number;
+  longitude?: number;
   createdAt: string;
   savedDesignIds: string[];
 }

@@ -26,7 +26,7 @@ interface AppContextType {
   loginDemoUser: (userIndex?: number) => void;
   loginUser: (user: User) => void;
   logout: () => void;
-  updateUserLocation: (newLocation: string) => void;
+  updateUserLocation: (newLocation: string, lat?: number, lng?: number) => void;
 
   // Catalog & Recommendations
   catalog: KurtiDesign[];
@@ -337,10 +337,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     navigateTo('/login');
   };
 
-  const updateUserLocation = (newLocation: string) => {
+  const updateUserLocation = (newLocation: string, lat?: number, lng?: number) => {
     if (user) {
-      setUser({ ...user, location: newLocation });
-      showToast(`Location updated to ${newLocation}`, 'info');
+      const updatedUser: User = {
+        ...user,
+        location: newLocation,
+        ...(lat !== undefined ? { latitude: lat } : {}),
+        ...(lng !== undefined ? { longitude: lng } : {}),
+      };
+      setUser(updatedUser);
+      sessionStorage.setItem('reweave_user', JSON.stringify(updatedUser));
+      showToast(`Location set to ${newLocation}`, 'info');
     }
   };
 

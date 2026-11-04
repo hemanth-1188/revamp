@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
+import { CustomerLocationMap } from '../components/CustomerLocationMap';
 import {
   Upload,
   Sparkles,
@@ -30,6 +31,7 @@ export const DashboardPage: React.FC = () => {
     navigateTo,
     setSelectedDesign,
     setSelectedTailor,
+    updateUserLocation,
   } = useApp();
 
   // Filter saved designs
@@ -407,6 +409,18 @@ export const DashboardPage: React.FC = () => {
           </div>
         )}
       </section>
+
+      {/* LEAFLET GEOSPATIAL ENGINE & LIVE LOCATION ACCESS */}
+      <CustomerLocationMap
+        user={user}
+        tailors={tailors}
+        onUpdateLocation={(newAddress, lat, lng) => updateUserLocation(newAddress, lat, lng)}
+        onSelectTailor={(tailor) => setSelectedTailor(tailor)}
+        onProceedToOrder={(tailor) => {
+          setSelectedTailor(tailor);
+          navigateTo('/order');
+        }}
+      />
 
       {/* NEARBY TAILORS SECTION */}
       <section className="space-y-4">

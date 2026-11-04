@@ -35,7 +35,6 @@ export const Navbar: React.FC = () => {
         { label: 'Tailors Directory', route: '/tailors', icon: Scissors },
       ]
     : [
-        { label: 'Dashboard', route: '/dashboard', icon: Compass },
         { label: 'Upload Inspiration', route: '/upload', icon: Upload, highlight: true },
         { label: 'Explore Styles', route: '/recommendations', icon: Sparkles },
         { label: '3D Studio', route: '/preview', icon: Compass },
@@ -157,21 +156,7 @@ export const Navbar: React.FC = () => {
                 <Scissors className="w-3.5 h-3.5 text-[#B5563E]" />
                 <span>Dashboard</span>
               </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => handleNav('/dashboard')}
-                className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
-                  currentRoute === '/dashboard'
-                    ? 'bg-[#2E2926] text-white border-[#2E2926]'
-                    : 'bg-white text-[#766B65] border-[#ECDAD4] hover:text-[#2E2926]'
-                }`}
-                title="Customer Dashboard"
-              >
-                <Compass className="w-3.5 h-3.5 text-[#B5563E]" />
-                <span>Dashboard</span>
-              </button>
-            )}
+            ) : null}
 
             {/* Saved Designs Pill (Customer only) */}
             {user?.role === 'customer' && (
