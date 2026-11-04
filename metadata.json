@@ -1,0 +1,6 @@
+{
+  "name": "REWEAVE - AI Kurti Design & Tailor Platform",
+  "description": "Transform fabric and kurti inspirations into tailored designs with real color/pattern extraction, 3D mannequin visualization, and neighborhood master tailors.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
