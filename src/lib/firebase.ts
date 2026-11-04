@@ -21,6 +21,8 @@ import {
   onAuthStateChanged,
   User as FirebaseUser,
   Auth,
+  setPersistence,
+  browserSessionPersistence,
 } from 'firebase/auth';
 import { User, UserRole } from '../types';
 import { isAuthorizedAdmin, getAuthorizedAdminEmails } from '../config/adminConfig';
@@ -58,7 +60,11 @@ if (typeof window !== 'undefined') {
       app = getApps()[0];
     }
     auth = getAuth(app);
+    try {
+      setPersistence(auth, browserSessionPersistence).catch(() => {});
+    } catch {}
     googleProvider = new GoogleAuthProvider();
+    googleProvider.setCustomParameters({ prompt: 'select_account' });
     try {
       analytics = getAnalytics(app);
     } catch {
@@ -241,6 +247,8 @@ export async function loginWithFirebaseGoogle(
 ): Promise<{ user: User; error?: string }> {
   if (isFirebaseConfigured() && auth && googleProvider) {
     try {
+      googleProvider.setCustomParameters({ prompt: 'select_account' });
+      await signOut(auth).catch(() => {});
       const result = await signInWithPopup(auth, googleProvider);
       const appUser = mapFirebaseUserToAppUser(result.user, preferredRole);
       return { user: appUser };

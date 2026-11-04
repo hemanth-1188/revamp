@@ -100,9 +100,14 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Authentication
+  // Authentication - session-based (starts completely logged out when opened in a new tab/session)
   const [user, setUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem('reweave_user');
+    // Purge any lingering localStorage user from past versions
+    try {
+      localStorage.removeItem('reweave_user');
+    } catch {}
+
+    const saved = sessionStorage.getItem('reweave_user');
     if (!saved) return null;
     try {
       const parsed = JSON.parse(saved);
@@ -114,7 +119,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         parsed?.id?.includes('ananya') ||
         parsed?.email?.includes('reweave.com')
       ) {
-        localStorage.removeItem('reweave_user');
+        sessionStorage.removeItem('reweave_user');
         return null;
       }
       return parsed;
@@ -199,9 +204,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setTimeout(() => setToast(null), 3800);
   };
 
-  // Sync to LocalStorage
+  // Sync to SessionStorage (no persistent localStorage auto-login)
   useEffect(() => {
-    if (user) localStorage.setItem('reweave_user', JSON.stringify(user));
+    try {
+      localStorage.removeItem('reweave_user');
+    } catch {}
+    if (user) {
+      sessionStorage.setItem('reweave_user', JSON.stringify(user));
+    } else {
+      sessionStorage.removeItem('reweave_user');
+    }
   }, [user]);
 
   useEffect(() => {
@@ -265,7 +277,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Auth Methods
   const loginUser = (newUser: User) => {
     setUser(newUser);
-    localStorage.setItem('reweave_user', JSON.stringify(newUser));
+    sessionStorage.setItem('reweave_user', JSON.stringify(newUser));
+    try {
+      localStorage.removeItem('reweave_user');
+    } catch {}
     showToast(`Welcome, ${newUser.name}! Logged in as ${newUser.role.toUpperCase()}.`, 'success');
 
     // If tailor logs in, dynamically ensure their tailor profile exists in tailors state
@@ -313,7 +328,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('reweave_user');
+    sessionStorage.removeItem('reweave_user');
+    try {
+      localStorage.removeItem('reweave_user');
+    } catch {}
     logoutFirebase().catch(() => {});
     showToast('Signed out successfully.', 'info');
     navigateTo('/login');
@@ -333,7 +351,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (user && (user.tailorId === tailorId || user.role === 'tailor')) {
       const updatedUser = { ...user, location };
       setUser(updatedUser);
-      localStorage.setItem('reweave_user', JSON.stringify(updatedUser));
+      sessionStorage.setItem('reweave_user', JSON.stringify(updatedUser));
+      try {
+        localStorage.removeItem('reweave_user');
+      } catch {}
     }
     updateTailorLocationApi({ tailorId, location, latitude, longitude, email: user?.email }).catch(() => {});
     showToast(`Boutique location registered in geolocation: ${location.split(',')[0]}`, 'success');
@@ -352,7 +373,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         ...(profile.shopName && { tailorShopName: profile.shopName }),
       };
       setUser(updatedUser);
-      localStorage.setItem('reweave_user', JSON.stringify(updatedUser));
+      sessionStorage.setItem('reweave_user', JSON.stringify(updatedUser));
+      try {
+        localStorage.removeItem('reweave_user');
+      } catch {}
     }
   };
 

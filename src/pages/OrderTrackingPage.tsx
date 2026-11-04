@@ -24,7 +24,10 @@ export const OrderTrackingPage: React.FC = () => {
     routeParams,
   } = useApp();
 
-  const orderId = routeParams?.id || currentOrder?.id;
+  const pathId = window.location.pathname.startsWith('/orders/')
+    ? window.location.pathname.replace('/orders/', '').trim()
+    : undefined;
+  const orderId = routeParams?.id || pathId || currentOrder?.id;
   const order = orderId ? orders.find((o) => o.id === orderId) : orders[0];
 
   if (!order) {

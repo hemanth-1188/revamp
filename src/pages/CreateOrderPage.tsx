@@ -12,10 +12,11 @@ import {
   Info,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { Measurements } from '../types';
+import { Measurements, Tailor, KurtiDesign } from '../types';
 
 export const CreateOrderPage: React.FC = () => {
   const {
+    user,
     catalog,
     tailors,
     selectedDesign,
@@ -27,6 +28,31 @@ export const CreateOrderPage: React.FC = () => {
     showToast,
     userPreferences,
   } = useApp();
+
+  const fallbackDesign: KurtiDesign = {
+    id: 'K001',
+    name: 'Bespoke Custom Garment',
+    category: 'kurti',
+    description: 'Custom made-to-measure tailored garment.',
+    imageUrl: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80',
+    frontImage: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80',
+    backImage: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80',
+    colors: ['Terracotta'],
+    hexPalette: ['#B5563E'],
+    pattern: 'Solid',
+    fabric: 'Cotton',
+    occasion: 'Casual',
+    style: 'A-line',
+    neckline: 'Round Neck',
+    sleeves: 'Three-Quarter',
+    length: 'Calf Length',
+    silhouette: 'A-line',
+    price: 650,
+    priceEstimate: 650,
+    popularityScore: 90,
+    tags: ['Custom', 'Cotton'],
+    availableTailorCount: 1,
+  };
 
   const fallbackTailor: Tailor = {
     id: 'T_ASSIGNED',
@@ -51,8 +77,8 @@ export const CreateOrderPage: React.FC = () => {
     sampleImages: [],
   };
 
-  const activeDesign = selectedDesign || catalog[0];
-  const activeTailor = selectedTailor || tailors[0] || fallbackTailor;
+  const activeDesign = selectedDesign || (catalog && catalog.length > 0 ? catalog[0] : fallbackDesign);
+  const activeTailor = selectedTailor || (tailors && tailors.length > 0 ? tailors[0] : fallbackTailor);
 
   // Form State
   const [size, setSize] = useState<'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL' | 'Custom'>('M');
