@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import {
   Scissors,
@@ -47,8 +47,22 @@ const SPECIALIZATION_OPTIONS = [
   'Bridal & Festive Alterations',
 ];
 
-export const TailorDashboardPage: React.FC = () => {
+interface TailorDashboardPageProps {
+  initialTab?: 'dashboard' | 'orders';
+}
+
+export const TailorDashboardPage: React.FC<TailorDashboardPageProps> = ({
+  initialTab = 'dashboard',
+}) => {
   const { user, orders, tailors, updateOrderStatus, updateTailorLocation, showToast } = useApp();
+
+  const [mainTab, setMainTab] = useState<'dashboard' | 'orders'>(initialTab);
+
+  useEffect(() => {
+    if (initialTab) {
+      setMainTab(initialTab);
+    }
+  }, [initialTab]);
 
   const [activeTab, setActiveTab] = useState<'all' | 'active' | 'ready' | 'completed'>('active');
   const [selectedOrderForMeasurements, setSelectedOrderForMeasurements] = useState<Order | null>(null);
@@ -181,8 +195,48 @@ export const TailorDashboardPage: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-left">
-      {/* TAILOR HEADER PROFILE */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#ECDAD4] shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      {/* PRIMARY TAILOR NAVIGATION: DASHBOARD & MY ORDERS */}
+      <div className="flex items-center gap-3 border-b border-[#ECDAD4] pb-4">
+        <button
+          type="button"
+          onClick={() => setMainTab('dashboard')}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-bold transition-all cursor-pointer ${
+            mainTab === 'dashboard'
+              ? 'bg-[#B5563E] text-white shadow-xs'
+              : 'bg-white text-[#766B65] hover:text-[#2E2926] hover:bg-[#FAF2EE] border border-[#ECDAD4]'
+          }`}
+        >
+          <Scissors className="w-4 h-4" />
+          <span>Dashboard</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setMainTab('orders')}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-bold transition-all cursor-pointer ${
+            mainTab === 'orders'
+              ? 'bg-[#B5563E] text-white shadow-xs'
+              : 'bg-white text-[#766B65] hover:text-[#2E2926] hover:bg-[#FAF2EE] border border-[#ECDAD4]'
+          }`}
+        >
+          <Package className="w-4 h-4" />
+          <span>My Orders</span>
+          {tailorOrders.length > 0 && (
+            <span
+              className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                mainTab === 'orders' ? 'bg-white/25 text-white' : 'bg-[#FAF2EE] text-[#B5563E]'
+              }`}
+            >
+              {tailorOrders.length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {mainTab === 'dashboard' && (
+        <div className="space-y-8">
+          {/* TAILOR HEADER PROFILE */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#ECDAD4] shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#B5563E] to-[#E68A75] text-white flex items-center justify-center font-editorial text-3xl font-bold shadow-md shrink-0">
             ✂️
@@ -329,8 +383,11 @@ export const TailorDashboardPage: React.FC = () => {
           }}
         />
       </section>
+        </div>
+      )}
 
       {/* 2. ORDERS MANAGEMENT WORKSPACE (SIZES, USER INFOS & FABRIC DETAILS) */}
+      {mainTab === 'orders' && (
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#ECDAD4] shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#ECDAD4] pb-5">
           <div>
@@ -625,6 +682,7 @@ export const TailorDashboardPage: React.FC = () => {
           </div>
         )}
       </div>
+      )}
 
       {/* DETAILED TAILOR JOB TICKET / MEASUREMENTS & FABRIC MODAL */}
       {selectedOrderForMeasurements && (

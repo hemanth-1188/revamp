@@ -54,7 +54,7 @@ const AppRouter: React.FC = () => {
 
     // 4. Tailor Workspace
     if (currentRoute === '/tailor' || currentRoute === '/tailor/dashboard') {
-      return <TailorDashboardPage />;
+      return <TailorDashboardPage initialTab="dashboard" />;
     }
 
     // 5. Admin Center
@@ -92,6 +92,9 @@ const AppRouter: React.FC = () => {
       return <CreateOrderPage />;
     }
     if (currentRoute === '/orders') {
+      if (user.role === 'tailor') {
+        return <TailorDashboardPage initialTab="orders" />;
+      }
       return <OrdersListPage />;
     }
     if (currentRoute.startsWith('/orders/')) {
